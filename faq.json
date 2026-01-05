@@ -1,0 +1,215 @@
+{
+  "ru": [
+    {
+      "q": "Какие у вас машины?",
+      "a": "Флит компании состоит строго из гибридных Toyota Sienna с инвалидной рампой (WAV), преимущественно XLE трима."
+    },
+    {
+      "q": "Есть ли другие модели, кроме Toyota Sienna WAV?",
+      "a": "Нет."
+    },
+    {
+      "q": "Есть ли машины без рампы?",
+      "a": "Нет."
+    },
+    {
+      "q": "Какого типа рампы у вас установлены?",
+      "a": "Мы работаем только с AMT Vans."
+    },
+    {
+      "q": "Рампы гремят?",
+      "a": "Нет. При правильном обслуживании работают абсолютно тихо."
+    },
+    {
+      "q": "Сколько всего мест?",
+      "a": "7 мест, включая водителя."
+    },
+    {
+      "q": "Сколько машин?",
+      "a": "Сейчас в компании 9 автомобилей, мы стараемся увеличивать флит."
+    },
+    {
+      "q": "Сколько стоит аренда?",
+      "a": "От 600 до 700 долларов в неделю, в зависимости от выбранного плана по пробегу."
+    },
+    {
+      "q": "Какие условия аренды?",
+      "a": "Вы найдёте всю информацию в рабочей брошюре, которую можно скачать на этом сайте."
+    },
+    {
+      "q": "С какой страховой компанией вы работаете и можно ли её поменять?",
+      "a": "В настоящее время мы работаем с American Transit.\nHereford Insurance Company рассматривается как вариант для возможного перехода.\n\nВажно учитывать, что Hereford выставляет крайне высокие, фактически космические тарифы для водителей со стажем менее 3 лет в США, поэтому для большинства новых арендаторов такой переход экономически нецелесообразен.\n\nСмена страховой возможна, но в этом случае арендатор покрывает все расходы перехода и оплачивает страховку минимум за 6 месяцев вперёд."
+    },
+    {
+      "q": "Какой минимальный стаж требуется?",
+      "a": "Стаж в США от одного года."
+    },
+    {
+      "q": "Можно ли взять машину, если нет одного года стажа?",
+      "a": "Нет."
+    },
+    {
+      "q": "Я очень опытный водитель, можно взять машину без стажа в США?",
+      "a": "Нет."
+    },
+    {
+      "q": "Когда возвращается депозит?",
+      "a": "По договору депозит возвращается через 30 дней после возврата машины.\nОтветственным арендаторам компания возвращает 50% депозита в день возврата автомобиля."
+    },
+    {
+      "q": "Нужен ли мне свой E-ZPass аккаунт?",
+      "a": "Не обязательно. Компания может предоставить транспондер и выставлять счета раз в неделю."
+    },
+    {
+      "q": "На какой минимальный срок можно взять машину?",
+      "a": "Минимального срока нет, но о возврате машины нужно предупредить минимум за 2 недели."
+    },
+    {
+      "q": "Как долго оформляется страховка?",
+      "a": "От 2 до 5 рабочих дней."
+    },
+    {
+      "q": "Можно ли установить пороги?",
+      "a": "Да, но арендатор покрывает 50% стоимости установки."
+    },
+    {
+      "q": "Есть ли на машинах страпы с электроблокировкой?",
+      "a": "Да, на некоторых машинах они установлены."
+    },
+    {
+      "q": "Есть ли в машине камера?",
+      "a": "Все машины оборудованы трёхканальными камерами."
+    },
+    {
+      "q": "Как долго мне придётся ждать машину?",
+      "a": "Свободных машин в постоянном наличии нет.\nПосле одобрения документов вы вноситесь в лист ожидания, и мы связываемся с вами, когда появляется подходящий автомобиль."
+    },
+    {
+      "q": "Какие документы нужно предоставить?",
+      "a": "DMV, TLC лицензия, сертификат Defensive Driving Course, email и номер телефона."
+    },
+    {
+      "q": "Как получить скидку?",
+      "a": "Скидки возможны для арендаторов с чистым рекордом и стажем от 3 лет по DMV и TLC.\nИногда скидки появляются, если машина временно остаётся без арендатора."
+    },
+    {
+      "q": "Какие промо-акции вы проводите?",
+      "a": "Компания предоставляет одну бесплатную неделю каждые 6 месяцев.\nТакже проводится розыгрыш бесплатной недели в день рождения компании — 3 марта."
+    },
+    {
+      "q": "Можно ли поговорить по телефону?",
+      "a": "Мы работаем по переписке.\nМенеджмент не отвечает на звонки с неизвестных номеров.\nДля действующих арендаторов звонки возможны только в экстренных ситуациях."
+    },
+    {
+      "q": "Есть программа выкупа машины?",
+      "a": "Да, но компания не распродаёт машины, а наращивает флит.\nПри выкупе в рассрочку учитывается упущенная прибыль, поэтому предложение не будет дешёвым."
+    }
+  ],
+
+  "en": [
+    {
+      "q": "What vehicles do you offer?",
+      "a": "The company fleet consists strictly of hybrid Toyota Sienna vehicles with wheelchair access ramps (WAV), primarily XLE trim."
+    },
+    {
+      "q": "Do you offer any models other than Toyota Sienna WAV?",
+      "a": "No."
+    },
+    {
+      "q": "Do you have vehicles without ramps?",
+      "a": "No."
+    },
+    {
+      "q": "What type of ramps are installed?",
+      "a": "We work exclusively with AMT Vans."
+    },
+    {
+      "q": "Do the ramps rattle?",
+      "a": "No. With proper maintenance, they operate completely silently."
+    },
+    {
+      "q": "How many seats are available?",
+      "a": "7 seats, including the driver."
+    },
+    {
+      "q": "How many vehicles are in the fleet?",
+      "a": "Currently, the company operates 9 vehicles, and the fleet is continuously expanding."
+    },
+    {
+      "q": "How much is the rental?",
+      "a": "From $600 to $700 per week, depending on the selected mileage plan."
+    },
+    {
+      "q": "What are the rental terms?",
+      "a": "All rental terms are detailed in the company brochure available for download on this website."
+    },
+    {
+      "q": "Which insurance company do you work with and can it be changed?",
+      "a": "We currently work with American Transit.\nHereford Insurance Company is considered as a potential alternative.\n\nIt is important to note that Hereford charges extremely high rates for drivers with less than 3 years of driving experience in the US, making it economically impractical for most new renters.\n\nInsurance changes are possible, but in such cases the renter must cover all transition costs and prepay at least 6 months of insurance."
+    },
+    {
+      "q": "What is the minimum required driving experience?",
+      "a": "At least one year of driving experience in the United States."
+    },
+    {
+      "q": "Can I rent a vehicle without one year of US driving experience?",
+      "a": "No."
+    },
+    {
+      "q": "I am an experienced driver. Can I rent without US driving experience?",
+      "a": "No."
+    },
+    {
+      "q": "When is the deposit returned?",
+      "a": "According to the agreement, the deposit is returned 30 days after the vehicle is returned.\nResponsible renters may receive 50% of the deposit on the day of return."
+    },
+    {
+      "q": "Do I need my own E-ZPass account?",
+      "a": "Not necessarily. The company can provide a transponder and issue weekly statements."
+    },
+    {
+      "q": "What is the minimum rental period?",
+      "a": "There is no minimum rental period, but vehicle return must be announced at least two weeks in advance."
+    },
+    {
+      "q": "How long does insurance processing take?",
+      "a": "From 2 to 5 business days."
+    },
+    {
+      "q": "Can side steps be installed?",
+      "a": "Yes, but the renter covers 50% of the installation cost."
+    },
+    {
+      "q": "Do the vehicles have powered wheelchair restraints?",
+      "a": "Yes, some vehicles are equipped with powered locking straps."
+    },
+    {
+      "q": "Are cameras installed in the vehicles?",
+      "a": "All vehicles are equipped with three-channel cameras."
+    },
+    {
+      "q": "How long will I have to wait for a vehicle?",
+      "a": "There are no vehicles available on a permanent basis.\nAfter document approval, you will be added to a waiting list and contacted when a suitable vehicle becomes available."
+    },
+    {
+      "q": "What documents are required?",
+      "a": "DMV license, TLC license, Defensive Driving Course certificate, email address, and phone number."
+    },
+    {
+      "q": "How can I get a discount?",
+      "a": "Discounts may be available for renters with a clean record and more than 3 years of experience under DMV and TLC.\nOccasionally, discounts are offered when a vehicle is temporarily without a renter."
+    },
+    {
+      "q": "What promotions do you offer?",
+      "a": "The company provides one free rental week every 6 months.\nA free week is also raffled on the company anniversary — March 3."
+    },
+    {
+      "q": "Can I speak with someone by phone?",
+      "a": "We operate primarily via written communication.\nManagement does not answer calls from unknown numbers.\nCalls are available only for existing renters in emergency situations."
+    },
+    {
+      "q": "Is there a vehicle buyout program?",
+      "a": "Yes, but the company does not sell vehicles and focuses on expanding the fleet.\nIn installment buyouts, lost profit is taken into account, so the offer will not be inexpensive."
+    }
+  ]
+}
