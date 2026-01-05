@@ -12,6 +12,8 @@ from openai import OpenAI
 # ========= CONFIG =========
 PDF_PATH = os.getenv("BROCHURE_PDF", "brochure.pdf")
 CACHE_PATH = os.getenv("EMB_CACHE", "emb_cache.json")
+FAQ_PATH = os.getenv("FAQ_JSON", "faq.json")  # === FAQ ADDITION ===
+
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 EMB_MODEL = os.getenv("EMB_MODEL", "text-embedding-3-small")
 
@@ -72,6 +74,34 @@ def save_cache(data):
     with open(CACHE_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False)
 
+# ========= FAQ ADDITION =========
+FAQ_DATA = {"ru": [], "en": []}
+FAQ_EMB = {"ru": None, "en": None}
+
+def load_faq():
+    if not os.path.exists(FAQ_PATH):
+        return
+    with open(FAQ_PATH, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    for lang in ("ru", "en"):
+        FAQ_DATA[lang] = data.get(lang, [])
+        if FAQ_DATA[lang]:
+            questions = [x["q"] for x in FAQ_DATA[lang]]
+            FAQ_EMB[lang] = np.array(embed_texts(questions), dtype=np.float32)
+
+def find_faq_answer(lang: str, question: str, threshold: float = 0.85):
+    if not FAQ_DATA.get(lang) or FAQ_EMB.get(lang) is None:
+        return None
+
+    q_emb = np.array(embed_texts([question])[0], dtype=np.float32)
+    scores = [cosine(q_emb, FAQ_EMB[lang][i]) for i in range(len(FAQ_DATA[lang]))]
+    idx = int(np.argmax(scores))
+
+    if scores[idx] >= threshold:
+        return FAQ_DATA[lang][idx]["a"]
+    return None
+
 # ========= INDEX =========
 INDEX_CHUNKS: List[str] = []
 INDEX_EMB: np.ndarray | None = None
@@ -97,6 +127,7 @@ def build_index():
 
 @app.on_event("startup")
 def startup():
+    load_faq()        # === FAQ ADDITION ===
     build_index()
 
 # ========= API =========
@@ -111,6 +142,11 @@ def chat(payload: Dict[str, Any]):
         return {"answer": "Please enter a question."}
 
     lang = payload.get("lang", "ru")
+
+    # === FAQ ADDITION (PRIORITY) ===
+    faq_answer = find_faq_answer(lang, msg)
+    if faq_answer:
+        return {"answer": faq_answer}
 
     q_emb = np.array(embed_texts([msg])[0], dtype=np.float32)
     scores = [cosine(q_emb, INDEX_EMB[i]) for i in range(len(INDEX_CHUNKS))]
