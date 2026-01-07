@@ -1,6 +1,8 @@
 import os
 import re
 import json
+import uuid
+from datetime import datetime
 from typing import List, Dict, Any
 
 import numpy as np
@@ -10,12 +12,16 @@ from pypdf import PdfReader
 from openai import OpenAI
 
 # ========= CONFIG =========
+
 PDF_PATH = os.getenv("BROCHURE_PDF", "brochure.pdf")
 CACHE_PATH = os.getenv("EMB_CACHE", "emb_cache.json")
-FAQ_PATH = os.getenv("FAQ_JSON", "faq.json")  # === FAQ ADDITION ===
+FAQ_PATH = os.getenv("FAQ_JSON", "faq.json")
 
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 EMB_MODEL = os.getenv("EMB_MODEL", "text-embedding-3-small")
+
+# 🔒 Railway volume (ВАЖНО)
+CHAT_LOG_PATH = os.getenv("CHAT_LOG_PATH", "/data/chat_logs.json")
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -29,7 +35,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ========= CHAT LOG STORAGE =========
+
+def load_chat_logs():
+    if os.path.exists(CHAT_LOG_PATH):
+        with open(CHAT_LOG_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+def save_chat_logs(logs):
+    os.makedirs(os.path.dirname(CHAT_LOG_PATH), exist_ok=True)
+    with open(CHAT_LOG_PATH, "w", encoding="utf-8") as f:
+        json.dump(logs, f, ensure_ascii=False, indent=2)
+
 # ========= UTILS =========
+
 def read_pdf_text(path: str) -> str:
     reader = PdfReader(path)
     return "\n".join([(p.extract_text() or "") for p in reader.pages])
@@ -74,13 +94,15 @@ def save_cache(data):
     with open(CACHE_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False)
 
-# ========= FAQ ADDITION =========
+# ========= FAQ =========
+
 FAQ_DATA = {"ru": [], "en": []}
 FAQ_EMB = {"ru": None, "en": None}
 
 def load_faq():
     if not os.path.exists(FAQ_PATH):
         return
+
     with open(FAQ_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -103,6 +125,7 @@ def find_faq_answer(lang: str, question: str, threshold: float = 0.85):
     return None
 
 # ========= INDEX =========
+
 INDEX_CHUNKS: List[str] = []
 INDEX_EMB: np.ndarray | None = None
 
@@ -127,10 +150,11 @@ def build_index():
 
 @app.on_event("startup")
 def startup():
-    load_faq()        # === FAQ ADDITION ===
+    load_faq()
     build_index()
 
 # ========= API =========
+
 @app.get("/health")
 def health():
     return {"ok": True, "chunks": len(INDEX_CHUNKS)}
@@ -143,7 +167,7 @@ def chat(payload: Dict[str, Any]):
 
     lang = payload.get("lang", "ru")
 
-    # === FAQ ADDITION (PRIORITY) ===
+    # FAQ priority
     faq_answer = find_faq_answer(lang, msg)
     if faq_answer:
         return {"answer": faq_answer}
@@ -154,37 +178,26 @@ def chat(payload: Dict[str, Any]):
 
     context = "\n\n---\n\n".join([INDEX_CHUNKS[i] for i in top])
 
-    if lang == "ru":
-        system = (
-            "Ты — ИИ-помощник компании Prime Fusion Inc.\n"
-            "Отвечай ТОЛЬКО на основе текста брошюры.\n"
-            "Если информации нет — скажи, что её нет в брошюре, и предложи связаться через WhatsApp или Telegram.\n"
-            "Пиши по-русски. Термины TLC, AMT, WAV не переводить.\n"
-            "Uber и Lyft пиши как Убер и Лифт.\n"
-            "Отвечай кратко и по делу."
-        )
-    else:
-        system = (
-            "You are an AI assistant for Prime Fusion Inc.\n"
-            "Answer ONLY using the provided brochure text.\n"
-            "If the information is not available, clearly state that and suggest contacting via WhatsApp or Telegram.\n"
-            "Keep the answer short and professional."
-        )
-
-    user_prompt = f"""
-USER QUESTION:
-{msg}
-
-BROCHURE CONTEXT:
-{context}
-"""
+    system = (
+        "Ты — ИИ-помощник компании Prime Fusion Inc.\n"
+        "Отвечай ТОЛЬКО на основе текста брошюры.\n"
+        "Если информации нет — скажи, что её нет в брошюре, и предложи связаться через WhatsApp или Telegram.\n"
+        "Отвечай кратко и по делу."
+        if lang == "ru" else
+        "You are an AI assistant for Prime Fusion Inc.\n"
+        "Answer ONLY using the provided brochure text.\n"
+        "If the information is not available, say so and suggest contacting via WhatsApp or Telegram."
+    )
 
     messages = [{"role": "system", "content": system}]
     for h in (payload.get("history") or [])[-6:]:
         if h.get("role") in ("user", "assistant"):
             messages.append({"role": h["role"], "content": h["content"]})
 
-    messages.append({"role": "user", "content": user_prompt})
+    messages.append({
+        "role": "user",
+        "content": f"USER QUESTION:\n{msg}\n\nBROCHURE CONTEXT:\n{context}"
+    })
 
     r = client.chat.completions.create(
         model=OPENAI_MODEL,
@@ -193,4 +206,26 @@ BROCHURE CONTEXT:
         max_tokens=350
     )
 
-    return {"answer": r.choices[0].message.content.strip()}
+    answer = r.choices[0].message.content.strip()
+
+    # ===== SAVE CHAT (NO SIDE EFFECTS) =====
+    try:
+        logs = load_chat_logs()
+        logs.append({
+            "id": str(uuid.uuid4()),
+            "ts": datetime.utcnow().isoformat(),
+            "lang": lang,
+            "question": msg,
+            "answer": answer
+        })
+        save_chat_logs(logs)
+    except Exception:
+        pass  # 🔒 никогда не ломаем чат
+
+    return {"answer": answer}
+
+# ========= ADMIN READ =========
+
+@app.get("/admin/ai-chats")
+def get_ai_chats():
+    return load_chat_logs()[::-1]  # новые сверху
