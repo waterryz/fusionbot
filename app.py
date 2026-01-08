@@ -143,7 +143,7 @@ def build_index():
 
     # ===== AGREEMENT / POLICIES (TXT) =====
     extra_files = [
-        "agreement.txt",
+        "rentalRU (16).txt",
         "policies.txt",
         "terms.txt",
     ]
@@ -286,5 +286,6 @@ def chat(payload: Dict[str, Any]):
 @app.get("/admin/ai-chats")
 def get_ai_chats():
     return load_chat_logs()[::-1]  # новые сверху
+
 
 
