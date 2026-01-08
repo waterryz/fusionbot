@@ -128,7 +128,6 @@ def find_faq_answer(lang: str, question: str, threshold: float = 0.85):
 
 INDEX_CHUNKS: List[str] = []
 INDEX_EMB: np.ndarray | None = None
-from docx import Document
 
 
 def build_index():
@@ -286,6 +285,7 @@ def chat(payload: Dict[str, Any]):
 @app.get("/admin/ai-chats")
 def get_ai_chats():
     return load_chat_logs()[::-1]  # новые сверху
+
 
 
 
