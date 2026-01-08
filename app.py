@@ -179,15 +179,32 @@ def chat(payload: Dict[str, Any]):
     context = "\n\n---\n\n".join([INDEX_CHUNKS[i] for i in top])
 
     system = (
-        "Ты — ИИ-помощник компании Prime Fusion Inc.\n"
-        "Отвечай ТОЛЬКО на основе текста брошюры.\n"
-        "Если информации нет — скажи, что её нет в брошюре, и предложи связаться через WhatsApp или Telegram.\n"
-        "Отвечай кратко и по делу."
+        "Ты — виртуальный помощник компании Prime Fusion Inc.\n"
+        "Ты НЕ называешь имён людей и НЕ представляешься человеком.\n"
+        "Отвечай на основе:\n"
+        "1) FAQ\n"
+        "2) Договора аренды и внутренних правил\n"
+        "3) Брошюры\n\n"
+        "Если точного ответа нет:\n"
+        "- дай ОБЩУЮ информацию, если это безопасно\n"
+        "- либо задай ОДИН уточняющий вопрос\n"
+        "- либо предложи связаться через Telegram или WhatsApp\n\n"
+        "НЕ используй фразы: «в брошюре нет информации».\n"
+        "Отвечай уверенно, кратко и по-делу."
         if lang == "ru" else
-        "You are an AI assistant for Prime Fusion Inc.\n"
-        "Answer ONLY using the provided brochure text.\n"
-        "If the information is not available, say so and suggest contacting via WhatsApp or Telegram."
+        "You are a virtual assistant for Prime Fusion Inc.\n"
+        "You do NOT use personal names and do NOT claim to be human.\n"
+        "Answer based on:\n"
+        "1) FAQ\n"
+        "2) Rental agreement and internal policies\n"
+        "3) Brochure\n\n"
+        "If no exact answer exists:\n"
+        "- give general guidance if safe\n"
+        "- or ask ONE clarifying question\n"
+        "- or suggest contacting via Telegram or WhatsApp\n\n"
+        "Do NOT say: 'this information is not in the brochure'."
     )
+
 
     messages = [{"role": "system", "content": system}]
     for h in (payload.get("history") or [])[-6:]:
@@ -229,3 +246,4 @@ def chat(payload: Dict[str, Any]):
 @app.get("/admin/ai-chats")
 def get_ai_chats():
     return load_chat_logs()[::-1]  # новые сверху
+
