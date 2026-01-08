@@ -128,25 +128,65 @@ def find_faq_answer(lang: str, question: str, threshold: float = 0.85):
 
 INDEX_CHUNKS: List[str] = []
 INDEX_EMB: np.ndarray | None = None
+from docx import Document
+
 
 def build_index():
     global INDEX_CHUNKS, INDEX_EMB
 
-    raw = read_pdf_text(PDF_PATH)
-    text = clean_text(raw)
-    chunks = chunk_text(text)
+    texts = []
 
+    # ===== BROCHURE (PDF) =====
+    if os.path.exists(PDF_PATH):
+        raw = read_pdf_text(PDF_PATH)
+        texts.append(clean_text(raw))
+
+    # ===== AGREEMENT / POLICIES (TXT) =====
+    extra_files = [
+        "agreement.txt",
+        "policies.txt",
+        "terms.txt",
+    ]
+
+    for path in extra_files:
+        if not os.path.exists(path):
+            continue
+
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                raw = f.read()
+
+            texts.append(clean_text(raw))
+
+        except Exception as e:
+            print(f"[INDEX] Failed to read {path}: {e}")
+
+    if not texts:
+        INDEX_CHUNKS = []
+        INDEX_EMB = None
+        return
+
+    # ===== MERGE & CHUNK =====
+    full_text = "\n\n".join(texts)
+    chunks = chunk_text(full_text)
+
+    # ===== CACHE CHECK =====
     cache = load_cache()
     if cache.get("chunks") == chunks:
         INDEX_CHUNKS = chunks
         INDEX_EMB = np.array(cache["embeddings"], dtype=np.float32)
         return
 
+    # ===== EMBEDDINGS =====
     emb = embed_texts(chunks)
-    save_cache({"chunks": chunks, "embeddings": emb})
+    save_cache({
+        "chunks": chunks,
+        "embeddings": emb
+    })
 
     INDEX_CHUNKS = chunks
     INDEX_EMB = np.array(emb, dtype=np.float32)
+
 
 @app.on_event("startup")
 def startup():
@@ -188,7 +228,7 @@ def chat(payload: Dict[str, Any]):
         "Если точного ответа нет:\n"
         "- дай ОБЩУЮ информацию, если это безопасно\n"
         "- либо задай ОДИН уточняющий вопрос\n"
-        "- либо предложи связаться через Telegram или WhatsApp\n\n"
+        "- либо предложи связаться через email,Telegram Bot\n\n"
         "НЕ используй фразы: «в брошюре нет информации».\n"
         "Отвечай уверенно, кратко и по-делу."
         if lang == "ru" else
@@ -201,7 +241,7 @@ def chat(payload: Dict[str, Any]):
         "If no exact answer exists:\n"
         "- give general guidance if safe\n"
         "- or ask ONE clarifying question\n"
-        "- or suggest contacting via Telegram or WhatsApp\n\n"
+        "- or suggest contacting via email or Telegram Bot\n\n"
         "Do NOT say: 'this information is not in the brochure'."
     )
 
@@ -246,4 +286,5 @@ def chat(payload: Dict[str, Any]):
 @app.get("/admin/ai-chats")
 def get_ai_chats():
     return load_chat_logs()[::-1]  # новые сверху
+
 
