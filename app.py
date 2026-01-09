@@ -112,8 +112,23 @@ def load_faq():
             questions = [x["q"] for x in FAQ_DATA[lang]]
             FAQ_EMB[lang] = np.array(embed_texts(questions), dtype=np.float32)
 
-def find_faq_answer(lang: str, question: str, threshold: float = 0.85):
-    if not FAQ_DATA.get(lang) or FAQ_EMB.get(lang) is None:
+def normalize(t: str) -> str:
+    return re.sub(r"[^\w\s]", "", t.lower()).strip()
+
+
+def find_faq_answer(lang: str, question: str, threshold: float = 0.7):
+    if not FAQ_DATA.get(lang):
+        return None
+
+    q_norm = normalize(question)
+
+    # 1️⃣ FAST MATCH (exact / keyword)
+    for item in FAQ_DATA[lang]:
+        if normalize(item["q"]) in q_norm or q_norm in normalize(item["q"]):
+            return item["a"]
+
+    # 2️⃣ EMBEDDING MATCH
+    if FAQ_EMB.get(lang) is None:
         return None
 
     q_emb = np.array(embed_texts([question])[0], dtype=np.float32)
@@ -122,7 +137,9 @@ def find_faq_answer(lang: str, question: str, threshold: float = 0.85):
 
     if scores[idx] >= threshold:
         return FAQ_DATA[lang][idx]["a"]
+
     return None
+
 
 # ========= INDEX =========
 
@@ -285,6 +302,7 @@ def chat(payload: Dict[str, Any]):
 @app.get("/admin/ai-chats")
 def get_ai_chats():
     return load_chat_logs()[::-1]  # новые сверху
+
 
 
 
