@@ -26,7 +26,7 @@
     },
     {
       "q": "Сколько машин?",
-      "a": "Сейчас в компании 9 автомобилей, мы стараемся увеличивать флит."
+      "a": "Сейчас в компании 10 автомобилей, мы стараемся увеличивать флит."
     },
     {
       "q": "Сколько стоит аренда?",
@@ -133,7 +133,7 @@
     },
     {
       "q": "How many vehicles are in the fleet?",
-      "a": "Currently, the company operates 9 vehicles, and the fleet is continuously expanding."
+      "a": "Currently, the company operates 10 vehicles, and the fleet is continuously expanding."
     },
     {
       "q": "How much is the rental?",
