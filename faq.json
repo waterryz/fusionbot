@@ -124,6 +124,14 @@
 
   "en": [
     {
+      "q": "How many cars?",
+      "a": "Currently, the company operates 10 vehicles, and the fleet is continuously expanding."
+    },
+    {
+      "q": "How many cars do you have?",
+      "a": "Currently, the company operates 10 vehicles, and the fleet is continuously expanding."
+    },
+    {
       "q": "How many vehicles do you have?",
       "a": "Currently, the company operates 10 vehicles, and the fleet is continuously expanding."
     },
