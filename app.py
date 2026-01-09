@@ -21,7 +21,7 @@ OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 EMB_MODEL = os.getenv("EMB_MODEL", "text-embedding-3-small")
 
 # 🔒 Railway volume (ВАЖНО)
-CHAT_LOG_PATH = os.getenv("CHAT_LOG_PATH", "/data")
+CHAT_LOG_PATH = os.getenv("CHAT_LOG_PATH", "/data/chat_logs.json")
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
