@@ -1,6 +1,22 @@
 {
   "ru": [
     {
+      "q": "Сколько у вас авто?",
+      "a": "Сейчас в компании 10 автомобилей, мы стараемся увеличивать флит."
+    },
+    {
+      "q": "Сколько у вас автомобилей?",
+      "a": "Сейчас в компании 10 автомобилей, мы стараемся увеличивать флит."
+    },
+    {
+      "q": "Сколько машин?",
+      "a": "Сейчас в компании 10 автомобилей, мы стараемся увеличивать флит."
+    },
+    {
+      "q": "Сколько у вас машин?",
+      "a": "Сейчас в компании 10 автомобилей, мы стараемся увеличивать флит."
+    },
+    {
       "q": "Какие у вас машины?",
       "a": "Флит компании состоит строго из гибридных Toyota Sienna с инвалидной рампой (WAV), преимущественно XLE трима."
     },
@@ -107,6 +123,22 @@
   ],
 
   "en": [
+    {
+      "q": "How many vehicles do you have?",
+      "a": "Currently, the company operates 10 vehicles, and the fleet is continuously expanding."
+    },
+    {
+      "q": "How many automobiles?",
+      "a": "Currently, the company operates 10 vehicles, and the fleet is continuously expanding."
+    },
+    {
+      "q": "How many vehicles in the fleet?",
+      "a": "Currently, the company operates 10 vehicles, and the fleet is continuously expanding."
+    },
+    {
+      "q": "How many vehicles?",
+      "a": "Currently, the company operates 10 vehicles, and the fleet is continuously expanding."
+    },
     {
       "q": "What vehicles do you offer?",
       "a": "The company fleet consists strictly of hybrid Toyota Sienna vehicles with wheelchair access ramps (WAV), primarily XLE trim."
