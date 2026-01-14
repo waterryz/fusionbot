@@ -49,6 +49,10 @@ def save_chat_logs(logs):
         json.dump(logs, f, ensure_ascii=False, indent=2)
 
 # ========= UTILS =========
+def detect_lang(text: str) -> str:
+    if re.search(r"[а-яА-ЯёЁ]", text):
+        return "ru"
+    return "en"
 
 def read_pdf_text(path: str) -> str:
     reader = PdfReader(path)
@@ -221,35 +225,52 @@ def chat(payload: Dict[str, Any]):
     if not msg:
         return {"answer": "Please enter a question."}
 
-    lang = payload.get("lang", "ru")
+    # 🔤 Определяем язык вопроса
+    user_lang = detect_lang(msg)
 
-    # FAQ priority
-    faq_answer = find_faq_answer(lang, msg)
+    # 🌐 Язык интерфейса (НЕ язык ответа)
+    ui_lang = payload.get("lang", user_lang)
+
+    # ================= FAQ =================
+    # 1) Пытаемся найти ответ на языке вопроса
+    # 2) Если не нашли — пробуем второй язык
+    faq_answer = (
+        find_faq_answer(user_lang, msg)
+        or find_faq_answer("en" if user_lang == "ru" else "ru", msg)
+    )
     if faq_answer:
         return {"answer": faq_answer}
 
-    q_emb = np.array(embed_texts([msg])[0], dtype=np.float32)
-    scores = [cosine(q_emb, INDEX_EMB[i]) for i in range(len(INDEX_CHUNKS))]
-    top = np.argsort(scores)[-6:][::-1]
+    # ================= VECTOR SEARCH =================
+    if INDEX_EMB is None or not INDEX_CHUNKS:
+        context = ""
+    else:
+        q_emb = np.array(embed_texts([msg])[0], dtype=np.float32)
+        scores = [cosine(q_emb, INDEX_EMB[i]) for i in range(len(INDEX_CHUNKS))]
+        top = np.argsort(scores)[-6:][::-1]
+        context = "\n\n---\n\n".join([INDEX_CHUNKS[i] for i in top])
 
-    context = "\n\n---\n\n".join([INDEX_CHUNKS[i] for i in top])
-
+    # ================= SYSTEM PROMPT =================
     system = (
+        # -------- RU --------
         "Ты — виртуальный помощник компании Prime Fusion Inc.\n"
         "Ты НЕ называешь имён людей и НЕ представляешься человеком.\n"
+        "Отвечай СТРОГО на том же языке, на котором задан вопрос.\n\n"
         "Отвечай на основе:\n"
         "1) FAQ\n"
         "2) Договора аренды и внутренних правил\n"
         "3) Брошюры\n\n"
         "Если точного ответа нет:\n"
-        "- дай ОБЩУЮ информацию, если это безопасно\n"
+        "- дай общую информацию, если это безопасно\n"
         "- либо задай ОДИН уточняющий вопрос\n"
-        "- либо предложи связаться через email,Telegram Bot\n\n"
+        "- либо предложи связаться через email или Telegram Bot\n\n"
         "НЕ используй фразы: «в брошюре нет информации».\n"
-        "Отвечай уверенно, кратко и по-делу."
-        if lang == "ru" else
+        "Отвечай уверенно, кратко и по делу."
+        if user_lang == "ru" else
+        # -------- EN --------
         "You are a virtual assistant for Prime Fusion Inc.\n"
         "You do NOT use personal names and do NOT claim to be human.\n"
+        "Answer STRICTLY in the same language as the user's question.\n\n"
         "Answer based on:\n"
         "1) FAQ\n"
         "2) Rental agreement and internal policies\n"
@@ -261,17 +282,22 @@ def chat(payload: Dict[str, Any]):
         "Do NOT say: 'this information is not in the brochure'."
     )
 
-
+    # ================= MESSAGES =================
     messages = [{"role": "system", "content": system}]
+
     for h in (payload.get("history") or [])[-6:]:
         if h.get("role") in ("user", "assistant"):
-            messages.append({"role": h["role"], "content": h["content"]})
+            messages.append({
+                "role": h["role"],
+                "content": h["content"]
+            })
 
     messages.append({
         "role": "user",
         "content": f"USER QUESTION:\n{msg}\n\nBROCHURE CONTEXT:\n{context}"
     })
 
+    # ================= OPENAI =================
     r = client.chat.completions.create(
         model=OPENAI_MODEL,
         messages=messages,
@@ -281,13 +307,14 @@ def chat(payload: Dict[str, Any]):
 
     answer = r.choices[0].message.content.strip()
 
-    # ===== SAVE CHAT (NO SIDE EFFECTS) =====
+    # ================= LOGGING =================
     try:
         logs = load_chat_logs()
         logs.append({
             "id": str(uuid.uuid4()),
             "ts": datetime.utcnow().isoformat(),
-            "lang": lang,
+            "ui_lang": ui_lang,
+            "user_lang": user_lang,
             "question": msg,
             "answer": answer
         })
@@ -297,11 +324,13 @@ def chat(payload: Dict[str, Any]):
 
     return {"answer": answer}
 
+
 # ========= ADMIN READ =========
 
 @app.get("/admin/ai-chats")
 def get_ai_chats():
     return load_chat_logs()[::-1]  # новые сверху
+
 
 
 
