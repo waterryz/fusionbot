@@ -256,6 +256,7 @@ def chat(payload: Dict[str, Any]):
         "Ты — виртуальный помощник компании Prime Fusion Inc.\n"
         "Ты НЕ называешь имён людей и НЕ представляешься человеком.\n"
         "Отвечай СТРОГО на том же языке, на котором задан вопрос.\n\n"
+        "Если язык вопроса изменился — немедленно переключись и ИГНОРИРУЙ предыдущие ответы ассистента на другом языке.\n"
         "Отвечай на основе:\n"
         "1) FAQ\n"
         "2) Договора аренды и внутренних правил\n"
@@ -271,6 +272,7 @@ def chat(payload: Dict[str, Any]):
         "You are a virtual assistant for Prime Fusion Inc.\n"
         "You do NOT use personal names and do NOT claim to be human.\n"
         "Answer STRICTLY in the same language as the user's question.\n\n"
+        "If the conversation language changes, immediately switch and IGNORE previous assistant messages written in another language.\n\n"
         "Answer based on:\n"
         "1) FAQ\n"
         "2) Rental agreement and internal policies\n"
@@ -330,6 +332,7 @@ def chat(payload: Dict[str, Any]):
 @app.get("/admin/ai-chats")
 def get_ai_chats():
     return load_chat_logs()[::-1]  # новые сверху
+
 
 
 
