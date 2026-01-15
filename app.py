@@ -48,12 +48,6 @@ def save_chat_logs(logs):
     with open(CHAT_LOG_PATH, "w", encoding="utf-8") as f:
         json.dump(logs, f, ensure_ascii=False, indent=2)
 
-# ========= UTILS =========
-def detect_lang(text: str) -> str:
-    if re.search(r"[а-яА-ЯёЁ]", text):
-        return "ru"
-    return "en"
-
 def read_pdf_text(path: str) -> str:
     reader = PdfReader(path)
     return "\n".join([(p.extract_text() or "") for p in reader.pages])
@@ -225,19 +219,19 @@ def chat(payload: Dict[str, Any]):
     if not msg:
         return {"answer": "Please enter a question."}
 
-    # 🔤 Определяем язык вопроса
-    user_lang = detect_lang(msg)
+    ui_lang = payload.get("lang")  # "ru" или "en"
 
-    # 🌐 Язык интерфейса (НЕ язык ответа)
-    ui_lang = payload.get("lang", user_lang)
+    if ui_lang not in ("ru", "en"):
+        return {"answer": "Invalid interface language."}
+
+
 
     # ================= FAQ =================
     # 1) Пытаемся найти ответ на языке вопроса
     # 2) Если не нашли — пробуем второй язык
-    faq_answer = (
-        find_faq_answer(user_lang, msg)
-        or find_faq_answer("en" if user_lang == "ru" else "ru", msg)
-    )
+    faq_answer = find_faq_answer(ui_lang, msg)
+
+    
     if faq_answer:
         return {"answer": faq_answer}
 
@@ -252,37 +246,64 @@ def chat(payload: Dict[str, Any]):
 
     # ================= SYSTEM PROMPT =================
     system = (
-        # -------- RU --------
-        "Ты — виртуальный помощник компании Prime Fusion Inc.\n"
-        "Ты НЕ называешь имён людей и НЕ представляешься человеком.\n"
-        "Отвечай СТРОГО на том же языке, на котором задан вопрос.\n\n"
-        "Если язык вопроса изменился — немедленно переключись и ИГНОРИРУЙ предыдущие ответы ассистента на другом языке.\n"
-        "Отвечай на основе:\n"
+    # ================= RU =================
+        "Ты — официальный виртуальный ассистент компании Prime Fusion Inc.\n\n"
+        "Отвечай ИСКЛЮЧИТЕЛЬНО на русском языке.\n"
+        "НИКОГДА не используй английский язык.\n"
+        "Даже если пользователь пишет на английском — отвечай ТОЛЬКО на русском.\n\n"
+    
+        "Ты не называешь имён конкретных людей.\n"
+        "Ты не представляешься человеком и не используешь личные местоимения.\n\n"
+    
+        "Отвечай строго на основе:\n"
         "1) FAQ\n"
         "2) Договора аренды и внутренних правил\n"
-        "3) Брошюры\n\n"
+        "3) Брошюры компании\n\n"
+    
         "Если точного ответа нет:\n"
         "- дай общую информацию, если это безопасно\n"
         "- либо задай ОДИН уточняющий вопрос\n"
         "- либо предложи связаться через email или Telegram Bot\n\n"
-        "НЕ используй фразы: «в брошюре нет информации».\n"
-        "Отвечай уверенно, кратко и по делу."
-        if user_lang == "ru" else
-        # -------- EN --------
-        "You are a virtual assistant for Prime Fusion Inc.\n"
-        "You do NOT use personal names and do NOT claim to be human.\n"
-        "Answer STRICTLY in the same language as the user's question.\n\n"
-        "If the conversation language changes, immediately switch and IGNORE previous assistant messages written in another language.\n\n"
-        "Answer based on:\n"
+    
+        "НЕ используй фразы:\n"
+        "«в брошюре нет информации», «я не знаю», «у меня нет данных».\n\n"
+    
+        "Стиль ответа:\n"
+        "- уверенный\n"
+        "- профессиональный\n"
+        "- краткий и по делу\n"
+        "- без лишних пояснений\n"
+        if ui_lang == "ru" else
+    
+        # ================= EN =================
+        "You are the official virtual assistant of Prime Fusion Inc.\n\n"
+        "Answer ONLY in English.\n"
+        "NEVER use Russian.\n"
+        "Even if the user writes in another language, respond ONLY in English.\n\n"
+    
+        "You do not use personal names.\n"
+        "You do not claim to be human and do not use personal pronouns.\n\n"
+    
+        "Answer strictly based on:\n"
         "1) FAQ\n"
         "2) Rental agreement and internal policies\n"
-        "3) Brochure\n\n"
+        "3) Company brochure\n\n"
+    
         "If no exact answer exists:\n"
-        "- give general guidance if safe\n"
+        "- provide general guidance if safe\n"
         "- or ask ONE clarifying question\n"
         "- or suggest contacting via email or Telegram Bot\n\n"
-        "Do NOT say: 'this information is not in the brochure'."
+    
+        "Do NOT say:\n"
+        "'this information is not in the brochure', 'I do not know', 'I have no data'.\n\n"
+    
+        "Response style:\n"
+        "- confident\n"
+        "- professional\n"
+        "- concise and to the point\n"
+        "- no unnecessary explanations"
     )
+
 
     # ================= MESSAGES =================
     messages = [{"role": "system", "content": system}]
@@ -316,7 +337,6 @@ def chat(payload: Dict[str, Any]):
             "id": str(uuid.uuid4()),
             "ts": datetime.utcnow().isoformat(),
             "ui_lang": ui_lang,
-            "user_lang": user_lang,
             "question": msg,
             "answer": answer
         })
@@ -332,6 +352,7 @@ def chat(payload: Dict[str, Any]):
 @app.get("/admin/ai-chats")
 def get_ai_chats():
     return load_chat_logs()[::-1]  # новые сверху
+
 
 
 
