@@ -4,6 +4,8 @@ import json
 import uuid
 from datetime import datetime
 from typing import List, Dict, Any
+import requests
+
 
 import numpy as np
 from fastapi import FastAPI
@@ -212,7 +214,7 @@ def startup():
 @app.get("/health")
 def health():
     return {"ok": True, "chunks": len(INDEX_CHUNKS)}
-
+    
 @app.post("/chat")
 def chat(payload: Dict[str, Any]):
     msg = (payload.get("message") or "").strip()
@@ -223,6 +225,21 @@ def chat(payload: Dict[str, Any]):
 
     if ui_lang not in ("ru", "en"):
         return {"answer": "Invalid interface language."}
+
+    # 🔔 EMAIL NOTIFY
+    try:
+        requests.post(
+            "https://mailsend-production.up.railway.app/ai-notify",
+            json={
+                "message": msg,
+                "lang": ui_lang
+            },
+            timeout=2
+        )
+    except Exception:
+        pass
+
+
 
 
 
@@ -352,6 +369,7 @@ def chat(payload: Dict[str, Any]):
 @app.get("/admin/ai-chats")
 def get_ai_chats():
     return load_chat_logs()[::-1]  # новые сверху
+
 
 
 
