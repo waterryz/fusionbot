@@ -19,7 +19,7 @@ PDF_PATH = os.getenv("BROCHURE_PDF", "brochure.pdf")
 CACHE_PATH = os.getenv("EMB_CACHE", "emb_cache.json")
 FAQ_PATH = os.getenv("FAQ_JSON", "faq.json")
 
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4о-mini")
 EMB_MODEL = os.getenv("EMB_MODEL", "text-embedding-3-small")
 
 # 🔒 Railway volume (ВАЖНО)
