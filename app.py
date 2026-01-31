@@ -19,7 +19,7 @@ PDF_PATH = os.getenv("BROCHURE_PDF", "brochure.pdf")
 CACHE_PATH = os.getenv("EMB_CACHE", "emb_cache.json")
 FAQ_PATH = os.getenv("FAQ_JSON", "faq.json")
 
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1")
 EMB_MODEL = os.getenv("EMB_MODEL", "text-embedding-3-small")
 
 # 🔒 Railway volume (ВАЖНО)
@@ -369,6 +369,7 @@ def chat(payload: Dict[str, Any]):
 @app.get("/admin/ai-chats")
 def get_ai_chats():
     return load_chat_logs()[::-1]  # новые сверху
+
 
 
 
