@@ -278,6 +278,13 @@ def chat(payload: Dict[str, Any]):
         "2) Договора аренды и внутренних правил\n"
         "3) Брошюры компании\n\n"
     
+        "АКТУАЛЬНЫЕ ТАРИФЫ (приоритет над PDF и брошюрой):\n"
+        "- Экономный — $650 / неделя (3500 миль / месяц)\n"
+        "- Стандартный — $700 / неделя (4500 миль / месяц)\n"
+        "- Интенсивный — $750 / неделя (5500 миль / месяц)\n"
+        "- Double Shift — $1000 / неделя (безлимит, работа вдвоем)\n\n"
+        "Если информация в PDF отличается — использовать ТОЛЬКО эти цены.\n\n"
+    
         "Если точного ответа нет:\n"
         "- дай общую информацию, если это безопасно\n"
         "- либо задай ОДИН уточняющий вопрос\n"
@@ -307,6 +314,13 @@ def chat(payload: Dict[str, Any]):
         "2) Rental agreement and internal policies\n"
         "3) Company brochure\n\n"
     
+        "CURRENT PRICING (has priority over PDF and brochure):\n"
+        "- Economy — $650 / week (3500 miles / month)\n"
+        "- Standard — $700 / week (4500 miles / month)\n"
+        "- Intensive — $750 / week (5500 miles / month)\n"
+        "- Double Shift — $1000 / week (unlimited, two drivers)\n\n"
+        "If PDF contains different pricing — ALWAYS use this pricing.\n\n"
+    
         "If no exact answer exists:\n"
         "- provide general guidance if safe\n"
         "- or ask ONE clarifying question\n"
@@ -318,9 +332,10 @@ def chat(payload: Dict[str, Any]):
         "Response style:\n"
         "- confident\n"
         "- professional\n"
-        "- concise and to the point\n"
+        "- concise\n"
         "- no unnecessary explanations"
     )
+
 
 
     # ================= MESSAGES =================
@@ -370,6 +385,7 @@ def chat(payload: Dict[str, Any]):
 @app.get("/admin/ai-chats")
 def get_ai_chats():
     return load_chat_logs()[::-1]  # новые сверху
+
 
 
 
