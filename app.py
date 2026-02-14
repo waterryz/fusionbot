@@ -285,6 +285,7 @@ def chat(payload: Dict[str, Any]):
         "- Double Shift — $1000 / неделя (безлимит, работа вдвоем)\n\n"
         "Если информация в PDF отличается — использовать ТОЛЬКО эти цены.\n\n"
         "Любая цена, отличающаяся от указанных выше, считается устаревшей и запрещена к использованию.\n"
+        "Если вопрос содержит слова: цена, цена аренды, стоимость, арендная плата или тариф — НЕ использовать PDF и отвечать ТОЛЬКО на основе блока АКТУАЛЬНЫЕ ТАРИФЫ.\n"
 
     
         "Если точного ответа нет:\n"
@@ -323,6 +324,7 @@ def chat(payload: Dict[str, Any]):
         "- Double Shift — $1000 / week (unlimited, two drivers)\n\n"
         "If PDF contains different pricing — ALWAYS use this pricing.\n\n"
         "Any price other than those listed above is considered obsolete and is prohibited from use.\n"
+        "If the question contains the words price, rental price, cost, rent, or rate, DO NOT use PDF and answer ONLY based on the CURRENT RATES block.\n"
     
         "If no exact answer exists:\n"
         "- provide general guidance if safe\n"
@@ -388,6 +390,7 @@ def chat(payload: Dict[str, Any]):
 @app.get("/admin/ai-chats")
 def get_ai_chats():
     return load_chat_logs()[::-1]  # новые сверху
+
 
 
 
