@@ -284,6 +284,8 @@ def chat(payload: Dict[str, Any]):
         "- Интенсивный — $750 / неделя (5500 миль / месяц)\n"
         "- Double Shift — $1000 / неделя (безлимит, работа вдвоем)\n\n"
         "Если информация в PDF отличается — использовать ТОЛЬКО эти цены.\n\n"
+        "Любая цена, отличающаяся от указанных выше, считается устаревшей и запрещена к использованию.\n"
+
     
         "Если точного ответа нет:\n"
         "- дай общую информацию, если это безопасно\n"
@@ -320,6 +322,7 @@ def chat(payload: Dict[str, Any]):
         "- Intensive — $750 / week (5500 miles / month)\n"
         "- Double Shift — $1000 / week (unlimited, two drivers)\n\n"
         "If PDF contains different pricing — ALWAYS use this pricing.\n\n"
+        "Any price other than those listed above is considered obsolete and is prohibited from use.\n"
     
         "If no exact answer exists:\n"
         "- provide general guidance if safe\n"
@@ -385,6 +388,7 @@ def chat(payload: Dict[str, Any]):
 @app.get("/admin/ai-chats")
 def get_ai_chats():
     return load_chat_logs()[::-1]  # новые сверху
+
 
 
 
