@@ -1,6 +1,10 @@
 {
   "ru": [
     {
+      "q": "Телеграмм бот?",
+      "a": "Вы можете пролистать вниз, он находится в разделе контактов нажмите и перейдите по ссылке."
+    },
+    {
       "q": "У вас есть свободные авто?",
       "a": "Нет, но вы можете подать заявку в лист ожидания."
     },
@@ -127,6 +131,10 @@
   ],
 
   "en": [
+    {
+      "q": "Telegram bot?",
+      "a": "You can scroll down; it's in the contacts section. Click and follow the link."
+    },
     {
       "q": "How many cars?",
       "a": "Currently, the company operates 10 vehicles, and the fleet is continuously expanding."
