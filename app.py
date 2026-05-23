@@ -323,7 +323,7 @@ def chat(payload: Dict[str, Any]):
         "- Standard — $675 / week (3800 miles / month)\n"
         "- Intensive — $700 / week (4800 miles / month)\n"
         "- Extreme — $725 / week (5800 miles / month)\n"
-        "- Double Shift — $950 / week (unlimited, two drivers)\n\n"\n"
+        "- Double Shift — $950 / week (unlimited, two drivers)\n\n"
         "Any price other than those listed above is considered obsolete and is prohibited from use.\n"
         "If the question contains the words price, rental price, cost, rent, or rate, DO NOT use PDF and answer ONLY based on the CURRENT RATES block.\n"
     
