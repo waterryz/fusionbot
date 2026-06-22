@@ -51,6 +51,21 @@ def save_chat_logs(logs):
     with open(CHAT_LOG_PATH, "w", encoding="utf-8") as f:
         json.dump(logs, f, ensure_ascii=False, indent=2)
 
+def notify_email(message: str, answer: str, lang: str):
+    """Отправка вопрос+ответ на mailsend. Никогда не ломает чат."""
+    try:
+        requests.post(
+            "https://mailsend-production.up.railway.app/ai-notify",
+            json={
+                "message": message,
+                "answer": answer,
+                "lang": lang
+            },
+            timeout=5
+        )
+    except Exception:
+        pass
+
 def read_pdf_text(path: str) -> str:
     reader = PdfReader(path)
     return "\n".join([(p.extract_text() or "") for p in reader.pages])
@@ -215,7 +230,7 @@ def startup():
 @app.get("/health")
 def health():
     return {"ok": True, "chunks": len(INDEX_CHUNKS)}
-    
+
 @app.post("/chat")
 def chat(payload: Dict[str, Any]):
     msg = (payload.get("message") or "").strip()
@@ -227,30 +242,14 @@ def chat(payload: Dict[str, Any]):
     if ui_lang not in ("ru", "en"):
         return {"answer": "Invalid interface language."}
 
-    # 🔔 EMAIL NOTIFY
-    try:
-        requests.post(
-            "https://mailsend-production.up.railway.app/ai-notify",
-            json={
-                "message": msg,
-                "lang": ui_lang
-            },
-            timeout=2
-        )
-    except Exception:
-        pass
-
-
-
-
-
     # ================= FAQ =================
     # 1) Пытаемся найти ответ на языке вопроса
     # 2) Если не нашли — пробуем второй язык
     faq_answer = find_faq_answer(ui_lang, msg)
 
-    
     if faq_answer:
+        # 🔔 EMAIL NOTIFY (вопрос + ответ из FAQ)
+        notify_email(msg, faq_answer, ui_lang)
         return {"answer": faq_answer}
 
     # ================= VECTOR SEARCH =================
@@ -369,6 +368,9 @@ def chat(payload: Dict[str, Any]):
 
     answer = r.choices[0].message.content.strip()
 
+    # 🔔 EMAIL NOTIFY (вопрос + ответ ИИ)
+    notify_email(msg, answer, ui_lang)
+
     # ================= LOGGING =================
     try:
         logs = load_chat_logs()
@@ -391,18 +393,3 @@ def chat(payload: Dict[str, Any]):
 @app.get("/admin/ai-chats")
 def get_ai_chats():
     return load_chat_logs()[::-1]  # новые сверху
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
